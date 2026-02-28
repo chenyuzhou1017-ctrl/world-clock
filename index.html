@@ -21,7 +21,7 @@
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .header h1 {
@@ -31,6 +31,59 @@
             letter-spacing: 4px;
         }
 
+        /* Tab 导航 - 默认隐藏 */
+        .tab-nav {
+            display: none;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0 10px 15px;
+            margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .tab-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            margin-right: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: #888;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .tab-btn.active.hangzhou { border-color: #10b981; color: #10b981; }
+        .tab-btn.active.beijing { border-color: #e94560; color: #e94560; }
+        .tab-btn.active.istanbul { border-color: #f59e0b; color: #f59e0b; }
+        .tab-btn.active.paris { border-color: #8b5cf6; color: #8b5cf6; }
+        .tab-btn.active.rome { border-color: #ec4899; color: #ec4899; }
+        .tab-btn.active.newyork { border-color: #00d9ff; color: #00d9ff; }
+
+        .tab-flag {
+            font-size: 1.2rem;
+        }
+
+        /* 桌面端网格布局 */
         .cards-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -208,12 +261,125 @@
             margin-top: 2px;
         }
 
-        @media (max-width: 600px) {
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .header {
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+
+            /* 显示 Tab 导航 */
+            .tab-nav {
+                display: block;
+            }
+
+            /* 移动端单列布局 */
+            .cards-container {
+                display: block;
+            }
+
+            .city-card {
+                display: none;
+                margin-bottom: 20px;
+            }
+
+            .city-card.mobile-active {
+                display: block;
+                animation: fadeIn 0.3s ease;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .city-card:hover {
+                transform: none;
+            }
+
             .time-display {
+                font-size: 3.5rem;
+                text-align: center;
+            }
+
+            .date-display {
+                text-align: center;
+                font-size: 1rem;
+            }
+
+            .city-header {
+                justify-content: center;
+                margin-bottom: 25px;
+            }
+
+            .city-flag {
                 font-size: 2.2rem;
             }
-            .temperature {
+
+            .city-info {
+                text-align: center;
+            }
+
+            .city-info h2 {
                 font-size: 1.5rem;
+            }
+
+            .time-section {
+                margin-bottom: 25px;
+                padding-bottom: 25px;
+            }
+
+            .weather-section {
+                justify-content: center;
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .weather-icon {
+                font-size: 4rem;
+            }
+
+            .temperature {
+                font-size: 2.5rem;
+            }
+
+            .weather-desc {
+                font-size: 1rem;
+            }
+
+            .weather-details {
+                justify-content: center;
+                gap: 30px;
+                margin-top: 15px;
+            }
+
+            .weather-detail {
+                font-size: 0.9rem;
+            }
+
+            .weather-status {
+                justify-content: center;
+                gap: 20px;
+                margin-top: 20px;
+                padding-top: 15px;
+            }
+
+            .last-update {
+                font-size: 0.8rem;
+            }
+
+            .refresh-btn {
+                padding: 6px 16px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -223,10 +389,10 @@
         <h1>世界时钟与天气</h1>
     </div>
 
+    <div class="tab-nav" id="tabNav"></div>
     <div class="cards-container" id="cardsContainer"></div>
 
     <script>
-        // 按时区从东到西排列，杭州第一
         const cities = {
             hangzhou: {
                 name: '杭州',
@@ -296,11 +462,28 @@
         const MAX_RETRIES = 3;
         const TIMEOUT = 10000;
 
-        // 动态生成城市卡片
+        let activeCity = 'hangzhou';
+
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        function generateTabNav() {
+            const tabNav = document.getElementById('tabNav');
+            tabNav.innerHTML = Object.entries(cities).map(([key, city]) => `
+                <button class="tab-btn ${key} ${key === activeCity ? 'active' : ''}"
+                        onclick="switchCity('${key}')"
+                        data-city="${key}">
+                    <span class="tab-flag">${city.flag}</span>
+                    <span>${city.name}</span>
+                </button>
+            `).join('');
+        }
+
         function generateCityCards() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = Object.entries(cities).map(([key, city]) => `
-                <div class="city-card ${key}">
+                <div class="city-card ${key} ${key === activeCity ? 'mobile-active' : ''}" data-city="${key}">
                     <div class="city-header">
                         <span class="city-flag">${city.flag}</span>
                         <div class="city-info">
@@ -335,6 +518,26 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function switchCity(cityKey) {
+            activeCity = cityKey;
+
+            // 更新 Tab 状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.city === cityKey);
+            });
+
+            // 更新卡片显示
+            document.querySelectorAll('.city-card').forEach(card => {
+                card.classList.toggle('mobile-active', card.dataset.city === cityKey);
+            });
+
+            // 滚动 Tab 到可见位置
+            const activeTab = document.querySelector(`.tab-btn[data-city="${cityKey}"]`);
+            if (activeTab) {
+                activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
         }
 
         function updateTime() {
@@ -494,7 +697,6 @@
                     updateWeatherUI(city, cached, true);
                 }
             }
-            // 错峰请求，每个城市间隔1.5秒
             const cityKeys = Object.keys(cities);
             cityKeys.forEach((city, index) => {
                 setTimeout(() => {
@@ -504,11 +706,23 @@
         }
 
         // 初始化
+        generateTabNav();
         generateCityCards();
         updateTime();
         setInterval(updateTime, 1000);
         fetchAllWeather();
         setInterval(fetchAllWeather, 600000);
+
+        // 监听窗口大小变化
+        window.addEventListener('resize', () => {
+            if (!isMobile()) {
+                document.querySelectorAll('.city-card').forEach(card => {
+                    card.classList.remove('mobile-active');
+                });
+            } else {
+                switchCity(activeCity);
+            }
+        });
     </script>
 </body>
 </html>
