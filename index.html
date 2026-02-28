@@ -261,6 +261,64 @@
             margin-top: 2px;
         }
 
+        /* 汇率显示 */
+        .exchange-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .exchange-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .exchange-icon {
+            font-size: 1.2rem;
+        }
+
+        .exchange-title {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .exchange-rate {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .rate-value {
+            font-size: 1.6rem;
+            font-weight: 300;
+        }
+
+        .rate-label {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .rate-change {
+            font-size: 0.75rem;
+            margin-top: 6px;
+        }
+
+        .rate-change.up {
+            color: #10b981;
+        }
+
+        .rate-change.down {
+            color: #e94560;
+        }
+
+        .rate-update {
+            font-size: 0.7rem;
+            color: #555;
+            margin-top: 8px;
+        }
+
         /* 移动端适配 */
         @media (max-width: 768px) {
             body {
@@ -453,6 +511,33 @@
                 font-size: 0.8rem;
             }
 
+            /* 移动端汇率样式 */
+            .exchange-section {
+                text-align: center;
+                margin-top: 25px;
+                padding-top: 25px;
+            }
+
+            .exchange-header {
+                justify-content: center;
+            }
+
+            .exchange-rate {
+                justify-content: center;
+            }
+
+            .rate-value {
+                font-size: 2rem;
+            }
+
+            .rate-change {
+                text-align: center;
+            }
+
+            .rate-update {
+                text-align: center;
+            }
+
             /* 滑动指示器 */
             .swipe-indicator {
                 display: flex;
@@ -518,42 +603,48 @@
                 flag: '🇨🇳',
                 timezone: 'Asia/Shanghai',
                 tzLabel: 'Asia/Shanghai (UTC+8)',
-                weatherQuery: 'Hangzhou'
+                weatherQuery: 'Hangzhou',
+                currency: null // 不显示汇率
             },
             beijing: {
                 name: '北京',
                 flag: '🇨🇳',
                 timezone: 'Asia/Shanghai',
                 tzLabel: 'Asia/Shanghai (UTC+8)',
-                weatherQuery: 'Beijing'
+                weatherQuery: 'Beijing',
+                currency: null // 不显示汇率
             },
             istanbul: {
                 name: '伊斯坦布尔',
                 flag: '🇹🇷',
                 timezone: 'Europe/Istanbul',
                 tzLabel: 'Europe/Istanbul (UTC+3)',
-                weatherQuery: 'Istanbul'
+                weatherQuery: 'Istanbul',
+                currency: { code: 'TRY', name: '土耳其里拉', symbol: '₺' }
             },
             paris: {
                 name: '巴黎',
                 flag: '🇫🇷',
                 timezone: 'Europe/Paris',
                 tzLabel: 'Europe/Paris (UTC+1/+2)',
-                weatherQuery: 'Paris'
+                weatherQuery: 'Paris',
+                currency: { code: 'EUR', name: '欧元', symbol: '€' }
             },
             rome: {
                 name: '罗马',
                 flag: '🇮🇹',
                 timezone: 'Europe/Rome',
                 tzLabel: 'Europe/Rome (UTC+1/+2)',
-                weatherQuery: 'Rome'
+                weatherQuery: 'Rome',
+                currency: { code: 'EUR', name: '欧元', symbol: '€' }
             },
             newyork: {
                 name: '纽约',
                 flag: '🇺🇸',
                 timezone: 'America/New_York',
                 tzLabel: 'America/New_York (UTC-5/-4)',
-                weatherQuery: 'New+York'
+                weatherQuery: 'New+York',
+                currency: { code: 'USD', name: '美元', symbol: '$' }
             }
         };
 
@@ -648,6 +739,20 @@
                             </div>
                         </div>
                     </div>
+                    ${city.currency ? `
+                    <div class="exchange-section">
+                        <div class="exchange-header">
+                            <span class="exchange-icon">💱</span>
+                            <span class="exchange-title">${city.currency.name} (${city.currency.code}) / 人民币</span>
+                        </div>
+                        <div class="exchange-rate">
+                            <span class="rate-value" id="${key}Rate">--</span>
+                            <span class="rate-label">CNY = 1 ${city.currency.code}</span>
+                        </div>
+                        <div class="rate-change" id="${key}RateChange"></div>
+                        <div class="rate-update" id="${key}RateUpdate"></div>
+                    </div>
+                    ` : ''}
                 </div>
             `).join('');
         }
@@ -852,6 +957,111 @@
             });
         }
 
+        // 汇率相关
+        const RATE_CACHE_KEY = 'exchange_rate_cache';
+        const RATE_CACHE_DURATION = 60 * 60 * 1000; // 1小时缓存
+
+        function getRateCache() {
+            try {
+                const cache = localStorage.getItem(RATE_CACHE_KEY);
+                return cache ? JSON.parse(cache) : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function setRateCache(data) {
+            try {
+                localStorage.setItem(RATE_CACHE_KEY, JSON.stringify({
+                    data,
+                    timestamp: Date.now()
+                }));
+            } catch (e) {
+                console.warn('Failed to cache rate data:', e);
+            }
+        }
+
+        function updateExchangeUI(currencyCode, rate, fromCache = false) {
+            // 找到使用该货币的城市
+            for (const [key, city] of Object.entries(cities)) {
+                if (city.currency && city.currency.code === currencyCode) {
+                    const rateEl = document.getElementById(`${key}Rate`);
+                    const updateEl = document.getElementById(`${key}RateUpdate`);
+
+                    if (rateEl) {
+                        rateEl.textContent = rate.toFixed(4);
+                    }
+                    if (updateEl) {
+                        const now = new Date();
+                        const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                        const cacheLabel = fromCache ? ' (缓存)' : '';
+                        updateEl.textContent = `汇率更新于 ${timeStr}${cacheLabel}`;
+                    }
+                }
+            }
+        }
+
+        async function fetchExchangeRates() {
+            // 检查缓存
+            const cached = getRateCache();
+            if (cached && (Date.now() - cached.timestamp) < RATE_CACHE_DURATION) {
+                for (const [code, rate] of Object.entries(cached.data)) {
+                    updateExchangeUI(code, rate, true);
+                }
+                return;
+            }
+
+            // 获取需要查询的货币
+            const currencies = new Set();
+            for (const city of Object.values(cities)) {
+                if (city.currency) {
+                    currencies.add(city.currency.code);
+                }
+            }
+
+            try {
+                // 使用 frankfurter.app API (免费，基于欧洲央行数据)
+                const response = await fetchWithTimeout(
+                    `https://api.frankfurter.app/latest?from=CNY&to=${Array.from(currencies).join(',')}`,
+                    TIMEOUT
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                const rates = {};
+
+                // API 返回的是 1 CNY = x 外币，我们需要 1 外币 = x CNY
+                for (const [code, rate] of Object.entries(data.rates)) {
+                    const inverseRate = 1 / rate;
+                    rates[code] = inverseRate;
+                    updateExchangeUI(code, inverseRate, false);
+                }
+
+                setRateCache(rates);
+            } catch (error) {
+                console.error('Exchange rate fetch failed:', error);
+                // 如果有缓存，使用缓存数据
+                if (cached) {
+                    for (const [code, rate] of Object.entries(cached.data)) {
+                        updateExchangeUI(code, rate, true);
+                    }
+                } else {
+                    // 显示错误状态
+                    for (const [key, city] of Object.entries(cities)) {
+                        if (city.currency) {
+                            const rateEl = document.getElementById(`${key}Rate`);
+                            if (rateEl) {
+                                rateEl.innerHTML = '<span class="weather-error">--</span>';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // 滑动切换功能
         const cityKeys = Object.keys(cities);
         let touchStartX = 0;
@@ -946,6 +1156,8 @@
         setInterval(updateTime, 1000);
         fetchAllWeather();
         setInterval(fetchAllWeather, 600000);
+        fetchExchangeRates();
+        setInterval(fetchExchangeRates, 3600000); // 每小时更新汇率
 
         // 监听窗口大小变化
         window.addEventListener('resize', () => {
