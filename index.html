@@ -293,12 +293,30 @@
 
             .city-card.mobile-active {
                 display: block;
-                animation: fadeIn 0.3s ease;
+                animation: slideIn 0.3s ease;
             }
 
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
+            .city-card.slide-left {
+                animation: slideInLeft 0.3s ease;
+            }
+
+            .city-card.slide-right {
+                animation: slideInRight 0.3s ease;
+            }
+
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateX(0); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+
+            @keyframes slideInLeft {
+                from { opacity: 0; transform: translateX(50px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(-50px); }
+                to { opacity: 1; transform: translateX(0); }
             }
 
             .city-card:hover {
@@ -381,6 +399,34 @@
                 padding: 6px 16px;
                 font-size: 0.8rem;
             }
+
+            /* 滑动指示器 */
+            .swipe-indicator {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                margin-top: 25px;
+                padding-bottom: 20px;
+            }
+
+            .indicator-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                transition: all 0.3s;
+            }
+
+            .indicator-dot.active {
+                width: 24px;
+                border-radius: 4px;
+                background: rgba(255, 255, 255, 0.6);
+            }
+
+            .swipe-hint {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -391,6 +437,7 @@
 
     <div class="tab-nav" id="tabNav"></div>
     <div class="cards-container" id="cardsContainer"></div>
+    <div class="swipe-indicator" id="swipeIndicator"></div>
 
     <script>
         const cities = {
@@ -480,6 +527,19 @@
             `).join('');
         }
 
+        function generateSwipeIndicator() {
+            const indicator = document.getElementById('swipeIndicator');
+            indicator.innerHTML = Object.keys(cities).map((key) => `
+                <div class="indicator-dot ${key === activeCity ? 'active' : ''}" data-city="${key}"></div>
+            `).join('');
+        }
+
+        function updateSwipeIndicator() {
+            document.querySelectorAll('.indicator-dot').forEach(dot => {
+                dot.classList.toggle('active', dot.dataset.city === activeCity);
+            });
+        }
+
         function generateCityCards() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = Object.entries(cities).map(([key, city]) => `
@@ -520,7 +580,8 @@
             `).join('');
         }
 
-        function switchCity(cityKey) {
+        function switchCity(cityKey, direction = null) {
+            const prevCity = activeCity;
             activeCity = cityKey;
 
             // 更新 Tab 状态
@@ -530,7 +591,18 @@
 
             // 更新卡片显示
             document.querySelectorAll('.city-card').forEach(card => {
-                card.classList.toggle('mobile-active', card.dataset.city === cityKey);
+                const isActive = card.dataset.city === cityKey;
+                card.classList.remove('mobile-active', 'slide-left', 'slide-right');
+
+                if (isActive) {
+                    card.classList.add('mobile-active');
+                    // 添加滑动方向动画
+                    if (direction === 'left') {
+                        card.classList.add('slide-left');
+                    } else if (direction === 'right') {
+                        card.classList.add('slide-right');
+                    }
+                }
             });
 
             // 滚动 Tab 到可见位置
@@ -538,6 +610,9 @@
             if (activeTab) {
                 activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
+
+            // 更新滑动指示器
+            updateSwipeIndicator();
         }
 
         function updateTime() {
@@ -705,9 +780,57 @@
             });
         }
 
+        // 滑动切换功能
+        const cityKeys = Object.keys(cities);
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        function handleSwipe() {
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            const minSwipeDistance = 50;
+
+            // 确保是水平滑动（水平距离大于垂直距离）
+            if (Math.abs(diffX) < minSwipeDistance || Math.abs(diffX) < Math.abs(diffY)) {
+                return;
+            }
+
+            const currentIndex = cityKeys.indexOf(activeCity);
+
+            if (diffX > 0) {
+                // 向左滑动 -> 下一个城市（从右边进入）
+                const nextIndex = (currentIndex + 1) % cityKeys.length;
+                switchCity(cityKeys[nextIndex], 'left');
+            } else {
+                // 向右滑动 -> 上一个城市（从左边进入）
+                const prevIndex = (currentIndex - 1 + cityKeys.length) % cityKeys.length;
+                switchCity(cityKeys[prevIndex], 'right');
+            }
+        }
+
+        function initSwipeListeners() {
+            const container = document.getElementById('cardsContainer');
+
+            container.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            container.addEventListener('touchend', (e) => {
+                if (!isMobile()) return;
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                handleSwipe();
+            }, { passive: true });
+        }
+
         // 初始化
         generateTabNav();
         generateCityCards();
+        generateSwipeIndicator();
+        initSwipeListeners();
         updateTime();
         setInterval(updateTime, 1000);
         fetchAllWeather();
