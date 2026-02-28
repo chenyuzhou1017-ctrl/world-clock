@@ -319,6 +319,59 @@
                 to { opacity: 1; transform: translateX(0); }
             }
 
+            /* 到达边界的弹回效果 */
+            .city-card.bounce-left {
+                animation: bounceLeft 0.4s ease;
+            }
+
+            .city-card.bounce-right {
+                animation: bounceRight 0.4s ease;
+            }
+
+            @keyframes bounceLeft {
+                0% { transform: translateX(0); }
+                30% { transform: translateX(-20px); }
+                50% { transform: translateX(5px); }
+                70% { transform: translateX(-5px); }
+                100% { transform: translateX(0); }
+            }
+
+            @keyframes bounceRight {
+                0% { transform: translateX(0); }
+                30% { transform: translateX(20px); }
+                50% { transform: translateX(-5px); }
+                70% { transform: translateX(5px); }
+                100% { transform: translateX(0); }
+            }
+
+            /* 边界提示光晕 */
+            .edge-glow-left::before,
+            .edge-glow-right::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                width: 60px;
+                pointer-events: none;
+                animation: glowFade 0.5s ease;
+            }
+
+            .edge-glow-left::before {
+                left: 0;
+                background: linear-gradient(to right, rgba(139, 92, 246, 0.3), transparent);
+            }
+
+            .edge-glow-right::before {
+                right: 0;
+                background: linear-gradient(to left, rgba(139, 92, 246, 0.3), transparent);
+            }
+
+            @keyframes glowFade {
+                0% { opacity: 0; }
+                30% { opacity: 1; }
+                100% { opacity: 0; }
+            }
+
             .city-card:hover {
                 transform: none;
             }
@@ -422,6 +475,25 @@
                 width: 24px;
                 border-radius: 4px;
                 background: rgba(255, 255, 255, 0.6);
+            }
+
+            .indicator-dot.active.hangzhou {
+                background: #10b981;
+            }
+            .indicator-dot.active.beijing {
+                background: #e94560;
+            }
+            .indicator-dot.active.istanbul {
+                background: #f59e0b;
+            }
+            .indicator-dot.active.paris {
+                background: #8b5cf6;
+            }
+            .indicator-dot.active.rome {
+                background: #ec4899;
+            }
+            .indicator-dot.active.newyork {
+                background: #00d9ff;
             }
 
             .swipe-hint {
@@ -530,7 +602,7 @@
         function generateSwipeIndicator() {
             const indicator = document.getElementById('swipeIndicator');
             indicator.innerHTML = Object.keys(cities).map((key) => `
-                <div class="indicator-dot ${key === activeCity ? 'active' : ''}" data-city="${key}"></div>
+                <div class="indicator-dot ${key} ${key === activeCity ? 'active' : ''}" data-city="${key}"></div>
             `).join('');
         }
 
@@ -787,6 +859,35 @@
         let touchEndX = 0;
         let touchEndY = 0;
 
+        function showEdgeFeedback(direction) {
+            const activeCard = document.querySelector('.city-card.mobile-active');
+            const body = document.body;
+
+            if (!activeCard) return;
+
+            // 移除之前的动画类
+            activeCard.classList.remove('bounce-left', 'bounce-right');
+            body.classList.remove('edge-glow-left', 'edge-glow-right');
+
+            // 强制重绘
+            void activeCard.offsetWidth;
+
+            // 添加弹回动画和光晕效果
+            if (direction === 'left') {
+                activeCard.classList.add('bounce-left');
+                body.classList.add('edge-glow-right');
+            } else {
+                activeCard.classList.add('bounce-right');
+                body.classList.add('edge-glow-left');
+            }
+
+            // 清理动画类
+            setTimeout(() => {
+                activeCard.classList.remove('bounce-left', 'bounce-right');
+                body.classList.remove('edge-glow-left', 'edge-glow-right');
+            }, 500);
+        }
+
         function handleSwipe() {
             const diffX = touchStartX - touchEndX;
             const diffY = touchStartY - touchEndY;
@@ -798,15 +899,25 @@
             }
 
             const currentIndex = cityKeys.indexOf(activeCity);
+            const isFirst = currentIndex === 0;
+            const isLast = currentIndex === cityKeys.length - 1;
 
             if (diffX > 0) {
-                // 向左滑动 -> 下一个城市（从右边进入）
-                const nextIndex = (currentIndex + 1) % cityKeys.length;
-                switchCity(cityKeys[nextIndex], 'left');
+                // 向左滑动 -> 下一个城市
+                if (isLast) {
+                    // 已经是最后一个，显示边界反馈
+                    showEdgeFeedback('left');
+                } else {
+                    switchCity(cityKeys[currentIndex + 1], 'left');
+                }
             } else {
-                // 向右滑动 -> 上一个城市（从左边进入）
-                const prevIndex = (currentIndex - 1 + cityKeys.length) % cityKeys.length;
-                switchCity(cityKeys[prevIndex], 'right');
+                // 向右滑动 -> 上一个城市
+                if (isFirst) {
+                    // 已经是第一个，显示边界反馈
+                    showEdgeFeedback('right');
+                } else {
+                    switchCity(cityKeys[currentIndex - 1], 'right');
+                }
             }
         }
 
