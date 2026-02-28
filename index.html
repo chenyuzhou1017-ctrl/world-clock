@@ -16,27 +16,26 @@
             min-height: 100vh;
             background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3e 50%, #2d1b4e 100%);
             color: #fff;
-            padding: 40px 20px;
+            padding: 30px 15px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 300;
             color: #fff;
             letter-spacing: 4px;
         }
 
         .cards-container {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            flex-wrap: wrap;
-            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -44,84 +43,79 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 40px;
-            min-width: 320px;
-            flex: 1;
-            max-width: 450px;
+            border-radius: 20px;
+            padding: 25px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .city-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .city-card.beijing {
-            border-top: 3px solid #e94560;
-        }
-
-        .city-card.newyork {
-            border-top: 3px solid #00d9ff;
-        }
+        .city-card.hangzhou { border-top: 3px solid #10b981; }
+        .city-card.beijing { border-top: 3px solid #e94560; }
+        .city-card.istanbul { border-top: 3px solid #f59e0b; }
+        .city-card.paris { border-top: 3px solid #8b5cf6; }
+        .city-card.rome { border-top: 3px solid #ec4899; }
+        .city-card.newyork { border-top: 3px solid #00d9ff; }
 
         .city-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .city-flag {
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
 
         .city-info h2 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 500;
         }
 
         .city-info .timezone {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: #888;
             margin-top: 2px;
         }
 
         .time-section {
-            margin-bottom: 30px;
-            padding-bottom: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .time-display {
-            font-size: 4rem;
+            font-size: 2.8rem;
             font-weight: 200;
             letter-spacing: 2px;
             font-variant-numeric: tabular-nums;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
-        .beijing .time-display {
-            color: #e94560;
-        }
-
-        .newyork .time-display {
-            color: #00d9ff;
-        }
+        .hangzhou .time-display { color: #10b981; }
+        .beijing .time-display { color: #e94560; }
+        .istanbul .time-display { color: #f59e0b; }
+        .paris .time-display { color: #8b5cf6; }
+        .rome .time-display { color: #ec4899; }
+        .newyork .time-display { color: #00d9ff; }
 
         .date-display {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #aaa;
         }
 
         .weather-section {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .weather-icon {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             line-height: 1;
         }
 
@@ -130,37 +124,33 @@
         }
 
         .temperature {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 300;
         }
 
         .weather-desc {
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: #aaa;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .weather-details {
             display: flex;
-            gap: 20px;
-            margin-top: 15px;
+            gap: 15px;
+            margin-top: 10px;
         }
 
         .weather-detail {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.9rem;
+            gap: 4px;
+            font-size: 0.8rem;
             color: #888;
-        }
-
-        .weather-detail-icon {
-            font-size: 1rem;
         }
 
         .loading {
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .loading-spinner {
@@ -177,13 +167,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 15px;
-            padding-top: 12px;
+            margin-top: 12px;
+            padding-top: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .last-update {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #555;
         }
 
@@ -191,9 +181,9 @@
             background: none;
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: #888;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -213,28 +203,17 @@
         }
 
         .retry-info {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #888;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
-        @media (max-width: 768px) {
-            .cards-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .city-card {
-                width: 100%;
-                max-width: 400px;
-            }
-
+        @media (max-width: 600px) {
             .time-display {
-                font-size: 3rem;
+                font-size: 2.2rem;
             }
-
             .temperature {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -244,90 +223,51 @@
         <h1>世界时钟与天气</h1>
     </div>
 
-    <div class="cards-container">
-        <div class="city-card beijing">
-            <div class="city-header">
-                <span class="city-flag">🇨🇳</span>
-                <div class="city-info">
-                    <h2>北京</h2>
-                    <div class="timezone">Asia/Shanghai (UTC+8)</div>
-                </div>
-            </div>
-
-            <div class="time-section">
-                <div class="time-display" id="beijingTime">--:--:--</div>
-                <div class="date-display" id="beijingDate">加载中...</div>
-            </div>
-
-            <div class="weather-section">
-                <div class="weather-icon" id="beijingWeatherIcon">🌡️</div>
-                <div class="weather-info">
-                    <div class="temperature" id="beijingTemp"><span class="loading">加载中...</span></div>
-                    <div class="weather-desc" id="beijingDesc"></div>
-                    <div class="weather-details">
-                        <div class="weather-detail">
-                            <span class="weather-detail-icon">💧</span>
-                            <span id="beijingHumidity">--</span>
-                        </div>
-                        <div class="weather-detail">
-                            <span class="weather-detail-icon">💨</span>
-                            <span id="beijingWind">--</span>
-                        </div>
-                    </div>
-                    <div class="weather-status">
-                        <span class="last-update" id="beijingUpdate"></span>
-                        <button class="refresh-btn" id="beijingRefresh" onclick="manualRefresh('beijing')">刷新</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="city-card newyork">
-            <div class="city-header">
-                <span class="city-flag">🇺🇸</span>
-                <div class="city-info">
-                    <h2>纽约</h2>
-                    <div class="timezone">America/New_York (UTC-5/-4)</div>
-                </div>
-            </div>
-
-            <div class="time-section">
-                <div class="time-display" id="newyorkTime">--:--:--</div>
-                <div class="date-display" id="newyorkDate">加载中...</div>
-            </div>
-
-            <div class="weather-section">
-                <div class="weather-icon" id="newyorkWeatherIcon">🌡️</div>
-                <div class="weather-info">
-                    <div class="temperature" id="newyorkTemp"><span class="loading">加载中...</span></div>
-                    <div class="weather-desc" id="newyorkDesc"></div>
-                    <div class="weather-details">
-                        <div class="weather-detail">
-                            <span class="weather-detail-icon">💧</span>
-                            <span id="newyorkHumidity">--</span>
-                        </div>
-                        <div class="weather-detail">
-                            <span class="weather-detail-icon">💨</span>
-                            <span id="newyorkWind">--</span>
-                        </div>
-                    </div>
-                    <div class="weather-status">
-                        <span class="last-update" id="newyorkUpdate"></span>
-                        <button class="refresh-btn" id="newyorkRefresh" onclick="manualRefresh('newyork')">刷新</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="cards-container" id="cardsContainer"></div>
 
     <script>
+        // 按时区从东到西排列，杭州第一
         const cities = {
-            beijing: {
+            hangzhou: {
+                name: '杭州',
+                flag: '🇨🇳',
                 timezone: 'Asia/Shanghai',
+                tzLabel: 'Asia/Shanghai (UTC+8)',
+                weatherQuery: 'Hangzhou'
+            },
+            beijing: {
+                name: '北京',
+                flag: '🇨🇳',
+                timezone: 'Asia/Shanghai',
+                tzLabel: 'Asia/Shanghai (UTC+8)',
                 weatherQuery: 'Beijing'
             },
+            istanbul: {
+                name: '伊斯坦布尔',
+                flag: '🇹🇷',
+                timezone: 'Europe/Istanbul',
+                tzLabel: 'Europe/Istanbul (UTC+3)',
+                weatherQuery: 'Istanbul'
+            },
+            paris: {
+                name: '巴黎',
+                flag: '🇫🇷',
+                timezone: 'Europe/Paris',
+                tzLabel: 'Europe/Paris (UTC+1/+2)',
+                weatherQuery: 'Paris'
+            },
+            rome: {
+                name: '罗马',
+                flag: '🇮🇹',
+                timezone: 'Europe/Rome',
+                tzLabel: 'Europe/Rome (UTC+1/+2)',
+                weatherQuery: 'Rome'
+            },
             newyork: {
+                name: '纽约',
+                flag: '🇺🇸',
                 timezone: 'America/New_York',
+                tzLabel: 'America/New_York (UTC-5/-4)',
                 weatherQuery: 'New+York'
             }
         };
@@ -352,13 +292,53 @@
         };
 
         const CACHE_KEY = 'weather_cache';
-        const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+        const CACHE_DURATION = 30 * 60 * 1000;
         const MAX_RETRIES = 3;
-        const TIMEOUT = 10000; // 10 seconds
+        const TIMEOUT = 10000;
+
+        // 动态生成城市卡片
+        function generateCityCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = Object.entries(cities).map(([key, city]) => `
+                <div class="city-card ${key}">
+                    <div class="city-header">
+                        <span class="city-flag">${city.flag}</span>
+                        <div class="city-info">
+                            <h2>${city.name}</h2>
+                            <div class="timezone">${city.tzLabel}</div>
+                        </div>
+                    </div>
+                    <div class="time-section">
+                        <div class="time-display" id="${key}Time">--:--:--</div>
+                        <div class="date-display" id="${key}Date">加载中...</div>
+                    </div>
+                    <div class="weather-section">
+                        <div class="weather-icon" id="${key}WeatherIcon">🌡️</div>
+                        <div class="weather-info">
+                            <div class="temperature" id="${key}Temp"><span class="loading">加载中...</span></div>
+                            <div class="weather-desc" id="${key}Desc"></div>
+                            <div class="weather-details">
+                                <div class="weather-detail">
+                                    <span>💧</span>
+                                    <span id="${key}Humidity">--</span>
+                                </div>
+                                <div class="weather-detail">
+                                    <span>💨</span>
+                                    <span id="${key}Wind">--</span>
+                                </div>
+                            </div>
+                            <div class="weather-status">
+                                <span class="last-update" id="${key}Update"></span>
+                                <button class="refresh-btn" id="${key}Refresh" onclick="manualRefresh('${key}')">刷新</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
         function updateTime() {
             const now = new Date();
-
             for (const [city, config] of Object.entries(cities)) {
                 const timeFormatter = new Intl.DateTimeFormat('zh-CN', {
                     timeZone: config.timezone,
@@ -367,7 +347,6 @@
                     second: '2-digit',
                     hour12: false
                 });
-
                 const dateFormatter = new Intl.DateTimeFormat('zh-CN', {
                     timeZone: config.timezone,
                     year: 'numeric',
@@ -375,7 +354,6 @@
                     day: 'numeric',
                     weekday: 'long'
                 });
-
                 document.getElementById(`${city}Time`).textContent = timeFormatter.format(now);
                 document.getElementById(`${city}Date`).textContent = dateFormatter.format(now);
             }
@@ -424,7 +402,6 @@
             document.getElementById(`${city}Humidity`).textContent = `${data.humidity}%`;
             document.getElementById(`${city}Wind`).textContent = `${data.wind} km/h`;
             document.getElementById(`${city}WeatherIcon`).textContent = data.icon;
-
             const updateTime = new Date(data.timestamp).toLocaleTimeString('zh-CN', {
                 hour: '2-digit',
                 minute: '2-digit'
@@ -437,9 +414,7 @@
             const tempEl = document.getElementById(`${city}Temp`);
             const descEl = document.getElementById(`${city}Desc`);
             const refreshBtn = document.getElementById(`${city}Refresh`);
-
             refreshBtn.disabled = loading;
-
             if (loading) {
                 tempEl.innerHTML = '<span class="loading-spinner">⏳</span>';
                 if (retryCount > 0) {
@@ -454,8 +429,6 @@
             document.getElementById(`${city}Temp`).innerHTML = `<span class="weather-error">--</span>`;
             document.getElementById(`${city}Desc`).innerHTML = `<span class="weather-error">${message}</span>`;
             document.getElementById(`${city}WeatherIcon`).textContent = '⚠️';
-
-            // Try to show cached data if available
             const cached = getCachedWeather(city);
             if (cached) {
                 updateWeatherUI(city, cached, true);
@@ -465,7 +438,6 @@
         async function fetchWithTimeout(url, timeout) {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), timeout);
-
             try {
                 const response = await fetch(url, { signal: controller.signal });
                 clearTimeout(timeoutId);
@@ -478,20 +450,16 @@
 
         async function fetchWeatherWithRetry(city, query, retryCount = 0) {
             setLoadingState(city, true, retryCount);
-
             try {
                 const response = await fetchWithTimeout(
                     `https://wttr.in/${query}?format=j1`,
                     TIMEOUT
                 );
-
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
-
                 const data = await response.json();
                 const current = data.current_condition[0];
-
                 const weatherData = {
                     temp: current.temp_C,
                     desc: current.lang_zh && current.lang_zh[0] ? current.lang_zh[0].value : current.weatherDesc[0].value,
@@ -500,21 +468,17 @@
                     icon: getWeatherIcon(current.weatherDesc[0].value),
                     timestamp: Date.now()
                 };
-
                 setCache(city, weatherData);
                 updateWeatherUI(city, weatherData, false);
                 setLoadingState(city, false);
-
             } catch (error) {
                 console.error(`Weather fetch failed for ${city} (attempt ${retryCount + 1}):`, error);
-
                 if (retryCount < MAX_RETRIES - 1) {
-                    // Exponential backoff: 1s, 2s, 4s
                     const delay = Math.pow(2, retryCount) * 1000;
                     setTimeout(() => fetchWeatherWithRetry(city, query, retryCount + 1), delay);
                 } else {
                     setLoadingState(city, false);
-                    setErrorState(city, '加载失败，点击刷新重试');
+                    setErrorState(city, '加载失败');
                 }
             }
         }
@@ -524,27 +488,26 @@
         }
 
         function fetchAllWeather() {
-            // First, try to show cached data immediately
             for (const city of Object.keys(cities)) {
                 const cached = getCachedWeather(city);
                 if (cached) {
                     updateWeatherUI(city, cached, true);
                 }
             }
-
-            // Then fetch fresh data with staggered requests to avoid rate limiting
-            fetchWeatherWithRetry('beijing', cities.beijing.weatherQuery);
-            setTimeout(() => {
-                fetchWeatherWithRetry('newyork', cities.newyork.weatherQuery);
-            }, 2000);
+            // 错峰请求，每个城市间隔1.5秒
+            const cityKeys = Object.keys(cities);
+            cityKeys.forEach((city, index) => {
+                setTimeout(() => {
+                    fetchWeatherWithRetry(city, cities[city].weatherQuery);
+                }, index * 1500);
+            });
         }
 
-        // Initialize
+        // 初始化
+        generateCityCards();
         updateTime();
         setInterval(updateTime, 1000);
-
         fetchAllWeather();
-        // Refresh weather every 10 minutes
         setInterval(fetchAllWeather, 600000);
     </script>
 </body>
